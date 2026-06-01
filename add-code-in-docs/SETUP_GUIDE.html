@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeBlocks Pro — Setup Guide</title>
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1f2d45;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #4e6077;
+    --radius: 10px;
+    --font-mono: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(160deg, #0d1428 0%, #0b1020 60%, #0f0b20 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 40px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 500px; height: 300px;
+    background: radial-gradient(ellipse, rgba(79,142,247,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(79,142,247,0.1);
+    border: 1px solid rgba(79,142,247,0.3);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: #fff;
+    margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin: 0 auto 32px;
+  }
+  .hero-tags {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .tag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+  }
+
+  /* NAV */
+  .toc {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .toc a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .toc a:hover {
+    color: var(--text);
+    border-color: var(--border);
+    background: var(--surface2);
+  }
+
+  /* MAIN */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 40px 80px;
+  }
+
+  /* SECTIONS */
+  section {
+    margin-bottom: 56px;
+  }
+  section:last-child { margin-bottom: 0; }
+
+  .section-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .step-num {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(79,142,247,0.35);
+  }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  /* STEP CARDS */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+  .step-card:hover { border-color: rgba(79,142,247,0.4); }
+  .step-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    border-radius: 3px 0 0 3px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .step-card:hover::before { opacity: 1; }
+  .step-num-sm {
+    width: 26px; height: 26px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .step-body h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .step-body p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  /* URL BOX */
+  .url-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .url-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .url-val {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    word-break: break-all;
+  }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 14px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.55;
+    border: 1px solid;
+  }
+  .callout.info {
+    background: rgba(79,142,247,0.08);
+    border-color: rgba(79,142,247,0.25);
+    color: #93c5fd;
+  }
+  .callout.warn {
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.25);
+    color: #fcd34d;
+  }
+  .callout.success {
+    background: rgba(16,185,129,0.08);
+    border-color: rgba(16,185,129,0.25);
+    color: #6ee7b7;
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 12px 0;
+  }
+  .code-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .code-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #febc2e; }
+  .dot.g { background: #28c840; }
+  .code-lang {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .code-body {
+    padding: 16px 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.7;
+    color: #abb2bf;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* FEATURE GRID */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  @media (max-width: 600px) {
+    .feature-grid { grid-template-columns: 1fr; }
+    main { padding: 32px 20px 60px; }
+    .hero { padding: 40px 20px 36px; }
+    .toc { padding: 10px 20px; }
+    .hero h1 { font-size: 28px; }
+  }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .feature-icon {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .feature-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .feature-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* THEME SWATCHES */
+  .theme-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+  }
+  .theme-swatch {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    min-width: 130px;
+  }
+  .swatch-bar {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .swatch-code {
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  /* LANG CHIPS */
+  .lang-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .lang-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .lang-chip .dot-lang {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  /* PREVIEW MOCKUP */
+  .preview-box {
+    background: #1a1e2e;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 20px 0;
+  }
+  .preview-header {
+    background: #21252b;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #e5c07b;
+    font-weight: 700;
+  }
+  .preview-code {
+    padding: 14px 16px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+
+  /* HR */
+  .hr { height: 1px; background: var(--border); margin: 40px 0; }
+
+  /* FAQ */
+  .faq-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .faq-q {
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .faq-q:hover { background: var(--surface2); }
+  .faq-a {
+    display: none;
+    padding: 0 18px 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .faq-item.open .faq-a { display: block; }
+  .faq-arrow { transition: transform 0.2s; font-size: 12px; color: var(--text-muted); }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">📦 Google Docs Add-on · 3 Files</div>
+  <h1>CodeBlocks <span>Pro</span></h1>
+  <p class="hero-sub">A production-ready Google Docs add-on for inserting beautiful, syntax-highlighted code blocks — right inside your documents.</p>
+  <div class="hero-tags">
+    <span class="tag">JS · TS · Python</span>
+    <span class="tag">SQL · HTML · CSS</span>
+    <span class="tag">Java · Go · Rust · Bash · JSON</span>
+    <span class="tag">5 Themes</span>
+    <span class="tag">Line Numbers</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="toc">
+  <a href="#files">Files</a>
+  <a href="#setup">Setup (5 Steps)</a>
+  <a href="#usage">How to Use</a>
+  <a href="#themes">Themes</a>
+  <a href="#languages">Languages</a>
+  <a href="#faq">FAQ</a>
+</nav>
+
+<main>
+
+  <!-- FILES OVERVIEW -->
+  <section id="files">
+    <div class="section-eyebrow">
+      <div class="step-num">📁</div>
+      <h2 class="section-title">What's in the package</h2>
+    </div>
+    <p style="color:var(--text-dim); margin-bottom:16px; font-size:14px;">You received 3 files. Each must be added to your Google Apps Script project exactly as named below.</p>
+    <div class="steps">
+      <div class="step-card">
+        <div style="font-size:22px; flex-shrink:0;">⚙️</div>
+        <div class="step-body">
+          <h4>Code.gs</h4>
+          <p>The backend brain. Handles all document manipulation — tokenizes your code, applies syntax colors, and inserts styled paragraphs into Google Docs. All logic lives here.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div style="font-size:22px; flex-shrink:0;">🎨</div>
+        <div class="step-body">
+          <h4>Sidebar.html</h4>
+          <p>The sidebar UI — the dark-themed panel that opens inside Google Docs. Contains all dropdowns, toggles, the code editor, and the Insert button.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div style="font-size:22px; flex-shrink:0;">📋</div>
+        <div class="step-body">
+          <h4>appsscript.json</h4>
+          <p>The manifest file. Declares required permissions (access to Docs + UI) and registers the add-on menu. This must be enabled in Apps Script settings to be editable.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETUP -->
+  <section id="setup">
+    <div class="section-eyebrow">
+      <div class="step-num">🚀</div>
+      <h2 class="section-title">Setup — 5 simple steps</h2>
+    </div>
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <span>You only do this setup once. After that, the add-on is available in every new Google Doc automatically.</span>
+    </div>
+
+    <div class="steps" style="margin-top:16px;">
+
+      <div class="step-card">
+        <div class="step-num-sm">1</div>
+        <div class="step-body">
+          <h4>Open Google Apps Script</h4>
+          <p>Go to <strong style="color:var(--accent)">script.google.com</strong> and click <strong>+ New project</strong> in the top-left. Name it <em>"CodeBlocks Pro"</em>.</p>
+          <div class="url-box">
+            <span class="url-label">URL</span>
+            <span class="url-val">https://script.google.com</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">2</div>
+        <div class="step-body">
+          <h4>Enable the manifest file</h4>
+          <p>In the Apps Script editor, click the gear icon ⚙️ (<strong>Project Settings</strong>) in the left sidebar. Check the box that says <strong>"Show 'appsscript.json' manifest file in editor"</strong>. Then go back to the editor (the &lt;/&gt; icon).</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">3</div>
+        <div class="step-body">
+          <h4>Add all 3 files</h4>
+          <p>You'll see a default <code style="color:var(--accent); font-family:var(--font-mono)">Code.gs</code> file already there. Here's what to do for each file:</p>
+          <br>
+          <p><strong>📄 Code.gs</strong> — Click the existing Code.gs tab. Select all content and delete it. Paste the full contents of your downloaded <code style="color:var(--accent); font-family:var(--font-mono)">Code.gs</code> file.</p>
+          <br>
+          <p><strong>🌐 Sidebar.html</strong> — Click the <strong>+</strong> button next to "Files" in the left sidebar → choose <strong>HTML</strong> → name it exactly <code style="color:var(--accent); font-family:var(--font-mono)">Sidebar</code> (no extension needed — Apps Script adds .html automatically). Paste the contents of your Sidebar.html file.</p>
+          <br>
+          <p><strong>📋 appsscript.json</strong> — Click the <code style="color:var(--accent); font-family:var(--font-mono)">appsscript.json</code> tab (visible after Step 2). Select all content and replace it entirely with the contents of your downloaded <code style="color:var(--accent); font-family:var(--font-mono)">appsscript.json</code> file.</p>
+          <div class="callout warn" style="margin-top:12px;">
+            <span class="callout-icon">⚠️</span>
+            <span>File names are case-sensitive. The HTML file must be named exactly <strong>Sidebar</strong> (capital S) — or the sidebar won't open.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">4</div>
+        <div class="step-body">
+          <h4>Save &amp; run once to authorize</h4>
+          <p>Press <strong>Ctrl+S</strong> (or Cmd+S on Mac) to save. Then click the <strong>▶ Run</strong> button in the toolbar (it will ask you to pick a function — choose <code style="color:var(--accent); font-family:var(--font-mono)">onOpen</code>).</p>
+          <p style="margin-top:8px;">Google will show an authorization popup. Click <strong>"Review Permissions"</strong> → choose your Google account → click <strong>"Advanced"</strong> → <strong>"Go to CodeBlocks Pro (unsafe)"</strong> → <strong>"Allow"</strong>.</p>
+          <div class="callout warn" style="margin-top:10px;">
+            <span class="callout-icon">⚠️</span>
+            <span>The "unsafe" warning is normal for personal scripts — it just means the script hasn't been verified by Google. Since you wrote it yourself, it's completely safe to allow.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">5</div>
+        <div class="step-body">
+          <h4>Open a Google Doc &amp; test it</h4>
+          <p>Open any Google Doc (or create a new one). You'll now see an <strong>Extensions</strong> menu in the top bar. Click it and look for <strong>CodeBlocks Pro → Open CodeBlocks Panel</strong>. The sidebar will open on the right side. You're ready! 🎉</p>
+          <div class="callout success" style="margin-top:10px;">
+            <span class="callout-icon">✅</span>
+            <span>If you don't see the menu immediately, refresh the Google Doc page once.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- USAGE -->
+  <section id="usage">
+    <div class="section-eyebrow">
+      <div class="step-num">💡</div>
+      <h2 class="section-title">How to use it</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num-sm">1</div>
+        <div class="step-body">
+          <h4>Open the panel</h4>
+          <p>In Google Docs, go to <strong>Extensions → CodeBlocks Pro → Open CodeBlocks Panel</strong>. The sidebar appears on the right.</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">2</div>
+        <div class="step-body">
+          <h4>Place your cursor in the doc</h4>
+          <p>Click somewhere in your document where you want the code block to appear. The block will be inserted right at that position (or at the end of the doc if no cursor position is found).</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">3</div>
+        <div class="step-body">
+          <h4>Choose language &amp; theme</h4>
+          <p>Use the two dropdowns to select your programming language and color theme. You can also click the colored dots below the dropdowns to quickly switch themes. The language badge in the code editor updates live.</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">4</div>
+        <div class="step-body">
+          <h4>Configure options</h4>
+          <p>Toggle <strong>Line numbers</strong> on/off and show/hide the <strong>language header bar</strong>. Adjust font size with the +/− buttons (default is 11pt — good for most docs).</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num-sm">5</div>
+        <div class="step-body">
+          <h4>Paste your code &amp; insert</h4>
+          <p>Paste or type code in the editor area. Press <kbd style="background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-family:var(--font-mono); font-size:12px;">Tab</kbd> for indentation. Click the glowing <strong>"Insert Code Block"</strong> button. Done — your code appears in the doc within seconds!</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:20px;">
+      <span class="callout-icon">💡</span>
+      <span>You can insert multiple code blocks in one session. Each block is independent — just change the language/theme/code and hit Insert again for the next one.</span>
+    </div>
+
+    <div class="hr"></div>
+
+    <!-- PREVIEW -->
+    <h3 style="font-size:16px; font-weight:700; color:#fff; margin-bottom:14px;">What a code block looks like in your doc</h3>
+    <div class="preview-box">
+      <div class="preview-header">
+        🟡&nbsp;&nbsp;TS &nbsp; TypeScript
+      </div>
+      <div class="preview-code">
+<span style="color:#4b5263;">  1  </span><span style="color:#c678dd;">interface</span> <span style="color:#e5c07b;">UserPayload</span> <span style="color:#56b6c2;">{</span>
+<span style="color:#4b5263;">  2  </span>  <span style="color:#abb2bf;">id</span><span style="color:#56b6c2;">:</span> <span style="color:#e5c07b;">string</span><span style="color:#56b6c2;">;</span>
+<span style="color:#4b5263;">  3  </span>  <span style="color:#abb2bf;">email</span><span style="color:#56b6c2;">:</span> <span style="color:#e5c07b;">string</span><span style="color:#56b6c2;">;</span>
+<span style="color:#4b5263;">  4  </span>  <span style="color:#abb2bf;">role</span><span style="color:#56b6c2;">:</span> <span style="color:#98c379;">'admin'</span> <span style="color:#56b6c2;">|</span> <span style="color:#98c379;">'user'</span><span style="color:#56b6c2;">;</span>
+<span style="color:#4b5263;">  5  </span><span style="color:#56b6c2;">}</span>
+<span style="color:#4b5263;">  6  </span>
+<span style="color:#4b5263;">  7  </span><span style="color:#c678dd;">async</span> <span style="color:#c678dd;">function</span> <span style="color:#61afef;">fetchUser</span><span style="color:#56b6c2;">(</span><span style="color:#abb2bf;">id</span><span style="color:#56b6c2;">:</span> <span style="color:#e5c07b;">string</span><span style="color:#56b6c2;">):</span> <span style="color:#e5c07b;">Promise</span><span style="color:#56b6c2;">&lt;</span><span style="color:#e5c07b;">UserPayload</span><span style="color:#56b6c2;">&gt;</span> <span style="color:#56b6c2;">{</span>
+<span style="color:#4b5263;">  8  </span>  <span style="color:#5c6370;">// fetch user from API</span>
+<span style="color:#4b5263;">  9  </span>  <span style="color:#c678dd;">const</span> <span style="color:#abb2bf;">res</span> <span style="color:#56b6c2;">=</span> <span style="color:#c678dd;">await</span> <span style="color:#61afef;">fetch</span><span style="color:#56b6c2;">(</span><span style="color:#98c379;">`/api/users/<span style="color:#56b6c2;">${</span><span style="color:#abb2bf;">id</span><span style="color:#56b6c2;">}</span>`</span><span style="color:#56b6c2;">);</span>
+<span style="color:#4b5263;"> 10  </span>  <span style="color:#c678dd;">return</span> <span style="color:#abb2bf;">res</span><span style="color:#56b6c2;">.</span><span style="color:#61afef;">json</span><span style="color:#56b6c2;">();</span>
+<span style="color:#4b5263;"> 11  </span><span style="color:#56b6c2;">}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- THEMES -->
+  <section id="themes">
+    <div class="section-eyebrow">
+      <div class="step-num">🎨</div>
+      <h2 class="section-title">Available themes</h2>
+    </div>
+    <div class="theme-grid">
+      <div class="theme-swatch">
+        <div class="swatch-bar" style="background:#21252b; color:#e5c07b;">⬛ One Dark</div>
+        <div class="swatch-code" style="background:#282c34;">
+          <span style="color:#c678dd;">const</span> <span style="color:#61afef;">x</span> <span style="color:#56b6c2;">=</span> <span style="color:#98c379;">"hello"</span><span style="color:#abb2bf;">;</span>
+        </div>
+      </div>
+      <div class="theme-swatch">
+        <div class="swatch-bar" style="background:#1e1f29; color:#ff79c6;">🧛 Dracula</div>
+        <div class="swatch-code" style="background:#282a36;">
+          <span style="color:#ff79c6;">const</span> <span style="color:#50fa7b;">x</span> <span style="color:#ff79c6;">=</span> <span style="color:#f1fa8c;">"hello"</span><span style="color:#f8f8f2;">;</span>
+        </div>
+      </div>
+      <div class="theme-swatch">
+        <div class="swatch-bar" style="background:#010409; color:#ffa657;">🐙 GitHub Dark</div>
+        <div class="swatch-code" style="background:#0d1117;">
+          <span style="color:#ff7b72;">const</span> <span style="color:#d2a8ff;">x</span> <span style="color:#ff7b72;">=</span> <span style="color:#a5d6ff;">"hello"</span><span style="color:#e6edf3;">;</span>
+        </div>
+      </div>
+      <div class="theme-swatch">
+        <div class="swatch-bar" style="background:#1e1f1c; color:#a6e22e;">🎨 Monokai</div>
+        <div class="swatch-code" style="background:#272822;">
+          <span style="color:#f92672;">const</span> <span style="color:#a6e22e;">x</span> <span style="color:#f92672;">=</span> <span style="color:#e6db74;">"hello"</span><span style="color:#f8f8f2;">;</span>
+        </div>
+      </div>
+      <div class="theme-swatch">
+        <div class="swatch-bar" style="background:#00212b; color:#b58900;">☀️ Solarized Dark</div>
+        <div class="swatch-code" style="background:#002b36;">
+          <span style="color:#859900;">const</span> <span style="color:#268bd2;">x</span> <span style="color:#cb4b16;">=</span> <span style="color:#2aa198;">"hello"</span><span style="color:#839496;">;</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LANGUAGES -->
+  <section id="languages">
+    <div class="section-eyebrow">
+      <div class="step-num">💻</div>
+      <h2 class="section-title">Supported languages</h2>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:12px;">11 languages with dedicated tokenizers for accurate syntax highlighting:</p>
+    <div class="lang-chips">
+      <div class="lang-chip"><span class="dot-lang" style="background:#f7df1e;"></span>JavaScript</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#3178c6;"></span>TypeScript</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#3572a5;"></span>Python</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#e38c00;"></span>SQL</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#e44d26;"></span>HTML</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#264de4;"></span>CSS</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#b07219;"></span>Java</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#00add8;"></span>Go</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#ce412b;"></span>Rust</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#89e051;"></span>Bash / Shell</div>
+      <div class="lang-chip"><span class="dot-lang" style="background:#8bc34a;"></span>JSON</div>
+    </div>
+    <div class="callout info" style="margin-top:12px;">
+      <span class="callout-icon">💡</span>
+      <span>Each language has its own tokenizer with keyword lists, type detection, function call detection, string & comment parsing, and numeric literal support.</span>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="section-eyebrow">
+      <div class="step-num">❓</div>
+      <h2 class="section-title">FAQ</h2>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Why does it say "Go to unsafe app" during authorization? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">This is completely normal for personal Google Apps Scripts. Google shows this warning for any script that hasn't gone through their official verification process (which costs money and is only for published marketplace add-ons). Since you're running your own code, it's entirely safe to proceed.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">The "Extensions" menu doesn't show CodeBlocks Pro. What do I do? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">First, hard-refresh the Google Doc page (Ctrl+Shift+R or Cmd+Shift+R). If it still doesn't appear, go back to script.google.com, open your project, and manually run the <code style="color:var(--accent);">onOpen</code> function using the ▶ Run button (make sure to select "onOpen" from the function dropdown first).</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I edit or delete a code block after inserting it? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Yes! Code blocks are just styled paragraphs in your Google Doc. You can select them and delete them normally. Editing the code text directly will lose the syntax colors (since they're applied during insertion), so it's best to delete and re-insert if you need to change the code.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Does this work on Google Docs mobile? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">The add-on sidebar only works in the Google Docs web interface on desktop. However, code blocks you've already inserted will display correctly on mobile — the formatting (colors, fonts, backgrounds) is baked into the document.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Will the code block look right when I export to PDF? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Yes! Since the colors and fonts are applied as native Google Docs text formatting, they export to PDF correctly. Background colors on paragraphs also export well. It's recommended to use File → Download → PDF for the best result.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How large can my code block be? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">There's no hard limit, but Google Docs may slow down for very large blocks (500+ lines). For very long code snippets, consider splitting into multiple smaller blocks. Insertion time increases proportionally with line count — a 50-line block typically inserts in about 3–6 seconds.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I share this add-on with my team? <span class="faq-arrow">▾</span></div>
+      <div class="faq-a">Yes — share the 3 files with teammates and have them follow the same setup steps. Each person needs their own Apps Script project. Alternatively, if you want centralized deployment, you can publish it as a private Google Workspace Marketplace add-on for your organization.</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>
