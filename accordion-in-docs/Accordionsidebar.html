@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AccordionBlocks Pro</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #0b0f1a;
+    --surface:    #111827;
+    --surface2:   #1a2236;
+    --surface3:   #1e293b;
+    --border:     #1f2d45;
+    --border2:    #2a3a55;
+    --accent:     #4f8ef7;
+    --accent2:    #7c3aed;
+    --green:      #10b981;
+    --yellow:     #f59e0b;
+    --red:        #ef4444;
+    --red-dim:    rgba(239,68,68,0.12);
+    --text:       #e2e8f0;
+    --text-dim:   #94a3b8;
+    --text-muted: #4e6077;
+    --radius:     8px;
+    --radius-sm:  5px;
+    --font-ui:    'Segoe UI', system-ui, sans-serif;
+    --font-mono:  'Courier New', monospace;
+    --shadow:     0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── LAYOUT ── */
+  .panel {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #111a2e 0%, #0a0f1e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 13px 15px 11px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -20px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }
+  .logo {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 10px rgba(124,58,237,0.4);
+    flex-shrink: 0;
+  }
+  .header h1 { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+  .header h1 span { color: var(--accent2); }
+  .header-sub { font-size: 11px; color: var(--text-muted); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .tab {
+    flex: 1;
+    padding: 9px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text-dim); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; flex: 1; overflow-y: auto; flex-direction: column; }
+  .tab-panel.active { display: flex; }
+
+  /* ── BODY ── */
+  .body {
+    padding: 14px 14px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 7px;
+  }
+
+  /* ── INPUT ── */
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    padding: 8px 11px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input[type="text"]:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 2px rgba(124,58,237,0.2);
+  }
+  input[type="text"]::placeholder { color: var(--text-muted); }
+
+  /* ── MODE SELECTOR ── */
+  .mode-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+  .mode-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 10px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    text-align: center;
+  }
+  .mode-card:hover { border-color: var(--border2); background: var(--surface2); }
+  .mode-card.active {
+    border-color: var(--accent2);
+    background: rgba(124,58,237,0.1);
+    box-shadow: 0 0 0 1px rgba(124,58,237,0.3);
+  }
+  .mode-card .mode-icon { font-size: 20px; margin-bottom: 5px; }
+  .mode-card .mode-title { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .mode-card .mode-desc  { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+  .mode-card.active .mode-title { color: var(--accent2); }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    border: 1px solid;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .callout.info  { background: rgba(79,142,247,0.07); border-color: rgba(79,142,247,0.2); color: #93c5fd; }
+  .callout.warn  { background: rgba(245,158,11,0.07); border-color: rgba(245,158,11,0.2); color: #fcd34d; }
+  .callout.success { background: rgba(16,185,129,0.07); border-color: rgba(16,185,129,0.2); color: #6ee7b7; }
+  .callout-icon { flex-shrink: 0; font-size: 13px; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 9px 14px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent2), #6d28d9);
+    color: #fff;
+    width: 100%;
+    font-size: 13px;
+    padding: 11px;
+    box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(124,58,237,0.45); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { background: var(--surface); color: var(--text-muted); box-shadow: none; cursor: not-allowed; transform: none; border: 1px solid var(--border); }
+
+  .btn-primary.loading {
+    background: var(--surface2);
+    color: var(--text-dim);
+    cursor: wait;
+    box-shadow: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary.loading::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    animation: shimmer 1.2s infinite;
+  }
+  @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+  .btn-primary.success { background: linear-gradient(135deg, var(--green), #059669); box-shadow: 0 4px 14px rgba(16,185,129,0.35); }
+  .btn-primary.error   { background: linear-gradient(135deg, var(--red), #dc2626); box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
+
+  .btn-sm {
+    font-size: 11px;
+    padding: 5px 9px;
+    border-radius: 4px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { background: var(--surface2); color: var(--text); }
+  .btn-sm.danger:hover { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.3); }
+  .btn-sm.accent { border-color: rgba(79,142,247,0.3); color: var(--accent); }
+  .btn-sm.accent:hover { background: rgba(79,142,247,0.1); }
+
+  /* ── STATUS ── */
+  .status {
+    height: 22px;
+    font-size: 11px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.25s;
+    flex-shrink: 0;
+  }
+  .status.visible { opacity: 1; }
+  .status.ok  { color: var(--green); }
+  .status.err { color: var(--red); }
+  .status.info { color: var(--accent); }
+
+  /* ── ACCORDION LIST ── */
+  .list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .list-title { font-size: 12px; font-weight: 700; color: var(--text-dim); }
+  .list-actions { display: flex; gap: 6px; }
+
+  .accordion-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .empty-icon { font-size: 36px; opacity: 0.4; }
+  .empty-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── ACCORDION CARD ── */
+  .acc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .acc-card:hover { border-color: var(--border2); }
+
+  .acc-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 11px;
+    cursor: default;
+  }
+  .acc-arrow {
+    font-size: 10px;
+    color: var(--accent2);
+    width: 14px;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+    font-weight: 700;
+  }
+  .acc-card.open .acc-arrow { transform: rotate(0deg); content: '▼'; }
+
+  .acc-title-wrap { flex: 1; min-width: 0; }
+  .acc-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .acc-meta { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  .acc-state-badge {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .acc-state-badge.open   { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.25); }
+  .acc-state-badge.closed { background: rgba(79,142,247,0.1);  color: #60a5fa; border: 1px solid rgba(79,142,247,0.2); }
+
+  /* Card actions */
+  .acc-actions {
+    display: flex;
+    gap: 5px;
+    padding: 0 11px 10px;
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+  }
+
+  /* Rename inline */
+  .acc-rename-form {
+    display: none;
+    padding: 8px 11px;
+    border-top: 1px solid var(--border);
+    gap: 6px;
+    align-items: center;
+  }
+  .acc-rename-form.visible { display: flex; }
+  .acc-rename-form input {
+    flex: 1;
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  /* ── REFRESH BUTTON ── */
+  .refresh-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+  }
+  .refresh-btn:hover { color: var(--accent); background: rgba(79,142,247,0.1); }
+  .refresh-btn.spinning { animation: spin 0.6s linear infinite; }
+  @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 7px 14px 9px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .footer-text { font-size: 10px; color: var(--text-muted); }
+  .version-badge {
+    font-size: 10px; color: var(--accent2);
+    background: rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 10px;
+    padding: 1px 7px; font-weight: 600;
+  }
+
+  /* ── LOADING OVERLAY ── */
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(11,15,26,0.75);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    flex-direction: column;
+    gap: 12px;
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .loading-overlay.visible { opacity: 1; pointer-events: all; }
+  .spinner {
+    width: 30px; height: 30px;
+    border: 3px solid var(--border2);
+    border-top-color: var(--accent2);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  .loading-text { font-size: 12px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Working…</div>
+</div>
+
+<div class="panel">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">▶</div>
+      <div>
+        <h1>Accordion<span>Blocks</span> Pro</h1>
+      </div>
+    </div>
+    <div class="header-sub">Collapsible sections for Google Docs</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" id="tab-create" onclick="switchTab('create')">＋ Create</div>
+    <div class="tab"        id="tab-manage" onclick="switchTab('manage')">☰ Manage</div>
+  </div>
+
+  <!-- ═══ TAB: CREATE ═══ -->
+  <div class="tab-panel active" id="panel-create">
+    <div class="body">
+
+      <!-- MODE -->
+      <div>
+        <div class="section-label">Creation mode</div>
+        <div class="mode-cards">
+          <div class="mode-card active" id="mode-empty" onclick="setMode('empty')">
+            <div class="mode-icon">📄</div>
+            <div class="mode-title">Empty</div>
+            <div class="mode-desc">Insert with a content placeholder</div>
+          </div>
+          <div class="mode-card" id="mode-wrap" onclick="setMode('wrap')">
+            <div class="mode-icon">🔲</div>
+            <div class="mode-title">Wrap Selection</div>
+            <div class="mode-desc">Wrap selected doc content</div>
+          </div>
+        </div>
+        <div class="callout info" id="mode-hint" style="margin-top:8px;">
+          <span class="callout-icon">ℹ️</span>
+          <span id="mode-hint-text">Places the cursor in your doc, then inserts a styled accordion with a placeholder paragraph inside — ready for you to fill in.</span>
+        </div>
+      </div>
+
+      <!-- TITLE -->
+      <div>
+        <div class="section-label">Accordion title</div>
+        <input type="text" id="acc-title" placeholder="e.g. Installation Steps, FAQ, Notes…"
+               oninput="updateCreateBtn()" onkeydown="if(event.key==='Enter') createAccordion()">
+      </div>
+
+      <!-- PREVIEW -->
+      <div>
+        <div class="section-label">Preview</div>
+        <div style="background:#1e2433; border:1px solid #2a3a55; border-radius:7px; overflow:hidden;">
+          <div style="background:#1a2d4a; padding:9px 14px; display:flex; align-items:center; gap:10px;">
+            <span style="color:#4f8ef7; font-weight:700; font-size:13px;" id="preview-arrow">▼</span>
+            <span style="color:#e2e8f0; font-weight:700; font-size:12px;" id="preview-title">Your Title Here</span>
+          </div>
+          <div style="background:#0f172a; padding:10px 14px 10px 22px; font-size:11px; color:#4e6077; font-style:italic;" id="preview-content">
+            ✏️  Add your content here — text, tables, images, anything.
+          </div>
+          <div style="background:#111827; padding:5px 14px;">
+            <span style="color:#2a3244; font-size:10px;">─────────────────────</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- STATUS + INSERT BUTTON -->
+    <div class="status" id="create-status"></div>
+    <div style="padding:0 14px 14px; flex-shrink:0;">
+      <button class="btn btn-primary" id="create-btn" onclick="createAccordion()" disabled>
+        ▶ Insert Accordion
+      </button>
+    </div>
+  </div><!-- /panel-create -->
+
+  <!-- ═══ TAB: MANAGE ═══ -->
+  <div class="tab-panel" id="panel-manage">
+
+    <div class="list-header">
+      <span class="list-title" id="list-count-label">Accordions in this doc</span>
+      <div class="list-actions">
+        <button class="btn-sm accent" onclick="expandAll()" title="Expand all">▼ All</button>
+        <button class="btn-sm"        onclick="collapseAll()" title="Collapse all">▶ All</button>
+        <button class="refresh-btn"   onclick="refreshList()" id="refresh-btn" title="Refresh">↻</button>
+      </div>
+    </div>
+
+    <div class="accordion-list" id="accordion-list">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-icon">▶</div>
+        <div class="empty-text">No accordions found in this document.<br>Switch to the Create tab to add one.</div>
+      </div>
+    </div>
+
+    <div class="status" id="manage-status"></div>
+
+  </div><!-- /panel-manage -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-text">AccordionBlocks Pro</span>
+    <span class="version-badge">v1.0</span>
+  </div>
+
+</div><!-- /panel -->
+
+<script>
+// ── STATE ──────────────────────────────────────
+var currentMode = 'empty';
+var accordions  = [];
+var renameTarget = null;
+
+// ── INIT ──────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('acc-title').addEventListener('input', function() {
+    var val = this.value || 'Your Title Here';
+    document.getElementById('preview-title').textContent = val;
+  });
+  // Load list silently when panel opens
+  loadAccordions(true);
+});
+
+// ── TABS ──────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  if (tab === 'manage') refreshList();
+}
+
+// ── MODE ──────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('mode-empty').classList.toggle('active', mode === 'empty');
+  document.getElementById('mode-wrap').classList.toggle('active', mode === 'wrap');
+
+  var hint = document.getElementById('mode-hint-text');
+  var arrow = document.getElementById('preview-arrow');
+  var content = document.getElementById('preview-content');
+
+  if (mode === 'empty') {
+    hint.textContent = 'Places the cursor in your doc, then inserts a styled accordion with a placeholder paragraph — ready for you to fill in.';
+    arrow.textContent = '▼';
+    content.style.display = 'block';
+  } else {
+    hint.textContent = 'First select content in your Google Doc (any text, paragraphs, or blocks), then come back here and click Insert.';
+    arrow.textContent = '▼';
+    content.style.display = 'none';
+  }
+}
+
+// ── CREATE BUTTON STATE ──────────────────────
+function updateCreateBtn() {
+  var title = document.getElementById('acc-title').value.trim();
+  var btn   = document.getElementById('create-btn');
+  btn.disabled = !title;
+}
+
+// ── CREATE ────────────────────────────────────
+function createAccordion() {
+  var title = document.getElementById('acc-title').value.trim();
+  if (!title) return;
+
+  var btn = document.getElementById('create-btn');
+  btn.className = 'btn btn-primary loading';
+  btn.textContent = 'Inserting…';
+  showStatus('create-status', 'Inserting accordion…', 'info');
+
+  var fn = currentMode === 'wrap' ? 'wrapSelectionAsAccordion' : 'createEmptyAccordion';
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.className = 'btn btn-primary';
+      if (result.success) {
+        btn.className = 'btn btn-primary success';
+        btn.textContent = '✓ Inserted!';
+        showStatus('create-status', '✓ Accordion "' + title + '" created', 'ok');
+        document.getElementById('acc-title').value = '';
+        document.getElementById('preview-title').textContent = 'Your Title Here';
+        updateCreateBtn();
+        setTimeout(function() {
+          btn.className = 'btn btn-primary';
+          btn.textContent = '▶ Insert Accordion';
+          btn.disabled = true;
+          hideStatus('create-status');
+        }, 2500);
+      } else {
+        btn.className = 'btn btn-primary error';
+        btn.textContent = '✕ Failed';
+        showStatus('create-status', '✕ ' + (result.error || 'Unknown error'), 'err');
+        setTimeout(function() {
+          btn.className = 'btn btn-primary';
+          btn.textContent = '▶ Insert Accordion';
+          btn.disabled = false;
+        }, 3000);
+      }
+    })
+    .withFailureHandler(function(err) {
+      btn.className = 'btn btn-primary error';
+      btn.textContent = '✕ Failed';
+      showStatus('create-status', '✕ ' + (err.message || err), 'err');
+      setTimeout(function() {
+        btn.className = 'btn btn-primary';
+        btn.textContent = '▶ Insert Accordion';
+        btn.disabled = false;
+      }, 3000);
+    })
+    [fn](title);
+}
+
+// ── LIST ──────────────────────────────────────
+function loadAccordions(silent) {
+  if (!silent) showLoading('Scanning document…');
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      if (result.success) {
+        accordions = result.accordions || [];
+        renderList();
+      } else {
+        showStatus('manage-status', '✕ ' + (result.error || 'Could not load'), 'err');
+      }
+    })
+    .withFailureHandler(function(err) {
+      hideLoading();
+      showStatus('manage-status', '✕ ' + (err.message || err), 'err');
+    })
+    .listAccordions();
+}
+
+function refreshList() {
+  var btn = document.getElementById('refresh-btn');
+  btn.classList.add('spinning');
+  google.script.run
+    .withSuccessHandler(function(result) {
+      btn.classList.remove('spinning');
+      if (result.success) {
+        accordions = result.accordions || [];
+        renderList();
+      }
+    })
+    .withFailureHandler(function() { btn.classList.remove('spinning'); })
+    .listAccordions();
+}
+
+function renderList() {
+  var container = document.getElementById('accordion-list');
+  var empty     = document.getElementById('empty-state');
+  var label     = document.getElementById('list-count-label');
+
+  label.textContent = accordions.length
+    ? accordions.length + ' accordion' + (accordions.length !== 1 ? 's' : '') + ' in this doc'
+    : 'Accordions in this doc';
+
+  // Clear cards but keep empty state node
+  var nodes = container.querySelectorAll('.acc-card');
+  nodes.forEach(function(n) { n.remove(); });
+
+  if (accordions.length === 0) {
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+
+  accordions.forEach(function(acc) {
+    container.appendChild(buildCard(acc));
+  });
+}
+
+function buildCard(acc) {
+  var card = document.createElement('div');
+  card.className = 'acc-card ' + acc.state;
+  card.id = 'card-' + acc.id;
+
+  card.innerHTML =
+    '<div class="acc-header">' +
+      '<span class="acc-arrow">' + (acc.state === 'open' ? '▼' : '▶') + '</span>' +
+      '<div class="acc-title-wrap">' +
+        '<div class="acc-title">' + escHtml(acc.title) + '</div>' +
+        '<div class="acc-meta">' + acc.lineCount + ' paragraph' + (acc.lineCount !== 1 ? 's' : '') + ' inside</div>' +
+      '</div>' +
+      '<span class="acc-state-badge ' + acc.state + '">' + acc.state + '</span>' +
+    '</div>' +
+    '<div class="acc-actions">' +
+      '<button class="btn-sm accent" onclick="toggleAcc(\'' + acc.id + '\')">' + (acc.state === 'open' ? '▶ Collapse' : '▼ Expand') + '</button>' +
+      '<button class="btn-sm" onclick="showRename(\'' + acc.id + '\')">✎ Rename</button>' +
+      '<button class="btn-sm danger" onclick="deleteAcc(\'' + acc.id + '\')">✕ Delete</button>' +
+    '</div>' +
+    '<div class="acc-rename-form" id="rename-' + acc.id + '">' +
+      '<input type="text" id="rename-input-' + acc.id + '" value="' + escHtml(acc.title) + '" placeholder="New title…" onkeydown="if(event.key===\'Enter\') commitRename(\'' + acc.id + '\')">' +
+      '<button class="btn-sm accent" onclick="commitRename(\'' + acc.id + '\')">✓</button>' +
+      '<button class="btn-sm" onclick="hideRename(\'' + acc.id + '\')">✕</button>' +
+    '</div>';
+
+  return card;
+}
+
+// ── TOGGLE ────────────────────────────────────
+function toggleAcc(id) {
+  showLoading('Toggling accordion…');
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      if (result.success) {
+        // Update local state
+        accordions.forEach(function(a) { if (a.id === id) a.state = result.newState; });
+        renderList();
+        showStatus('manage-status', '✓ ' + result.newState.charAt(0).toUpperCase() + result.newState.slice(1) + 'ed', 'ok');
+        autoHideStatus('manage-status', 2000);
+      } else {
+        showStatus('manage-status', '✕ ' + (result.error || 'Toggle failed'), 'err');
+      }
+    })
+    .withFailureHandler(function(err) {
+      hideLoading();
+      showStatus('manage-status', '✕ ' + (err.message || err), 'err');
+    })
+    .toggleAccordion(id);
+}
+
+// ── EXPAND / COLLAPSE ALL ─────────────────────
+function expandAll() {
+  showLoading('Expanding all…');
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      if (result.success) { refreshList(); showStatus('manage-status', '✓ All expanded', 'ok'); autoHideStatus('manage-status', 2000); }
+      else { showStatus('manage-status', '✕ ' + (result.error || 'Failed'), 'err'); }
+    })
+    .withFailureHandler(function(err) { hideLoading(); showStatus('manage-status', '✕ ' + err.message, 'err'); })
+    .expandAll();
+}
+
+function collapseAll() {
+  showLoading('Collapsing all…');
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      if (result.success) { refreshList(); showStatus('manage-status', '✓ All collapsed', 'ok'); autoHideStatus('manage-status', 2000); }
+      else { showStatus('manage-status', '✕ ' + (result.error || 'Failed'), 'err'); }
+    })
+    .withFailureHandler(function(err) { hideLoading(); showStatus('manage-status', '✕ ' + err.message, 'err'); })
+    .collapseAll();
+}
+
+// ── RENAME ────────────────────────────────────
+function showRename(id) {
+  document.querySelectorAll('.acc-rename-form').forEach(function(f) { f.classList.remove('visible'); });
+  document.getElementById('rename-' + id).classList.add('visible');
+  document.getElementById('rename-input-' + id).focus();
+}
+function hideRename(id) {
+  document.getElementById('rename-' + id).classList.remove('visible');
+}
+function commitRename(id) {
+  var newTitle = document.getElementById('rename-input-' + id).value.trim();
+  if (!newTitle) return;
+  showLoading('Renaming…');
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      if (result.success) {
+        accordions.forEach(function(a) { if (a.id === id) a.title = newTitle; });
+        renderList();
+        showStatus('manage-status', '✓ Renamed', 'ok');
+        autoHideStatus('manage-status', 2000);
+      } else {
+        showStatus('manage-status', '✕ ' + (result.error || 'Rename failed'), 'err');
+      }
+    })
+    .withFailureHandler(function(err) { hideLoading(); showStatus('manage-status', '✕ ' + err.message, 'err'); })
+    .renameAccordion(id, newTitle);
+}
+
+// ── DELETE ────────────────────────────────────
+function deleteAcc(id) {
+  var acc = accordions.find(function(a) { return a.id === id; });
+  var title = acc ? acc.title : 'this accordion';
+  if (!confirm('Delete "' + title + '"?\n\nThis removes the header, all content, and the footer from your doc. This cannot be undone.')) return;
+
+  showLoading('Deleting…');
+  google.script.run
+    .withSuccessHandler(function(result) {
+      hideLoading();
+      if (result.success) {
+        accordions = accordions.filter(function(a) { return a.id !== id; });
+        renderList();
+        showStatus('manage-status', '✓ Deleted', 'ok');
+        autoHideStatus('manage-status', 2500);
+      } else {
+        showStatus('manage-status', '✕ ' + (result.error || 'Delete failed'), 'err');
+      }
+    })
+    .withFailureHandler(function(err) { hideLoading(); showStatus('manage-status', '✕ ' + err.message, 'err'); })
+    .deleteAccordion(id);
+}
+
+// ── UTILS ─────────────────────────────────────
+function showLoading(msg) {
+  document.getElementById('loading-text').textContent = msg || 'Working…';
+  document.getElementById('loading-overlay').classList.add('visible');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('visible');
+}
+
+function showStatus(id, msg, type) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'status visible ' + (type || 'info');
+}
+function hideStatus(id) {
+  document.getElementById(id).className = 'status';
+}
+function autoHideStatus(id, delay) {
+  setTimeout(function() { hideStatus(id); }, delay || 2500);
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Polyfill Array.find for older V8 in Apps Script iframe
+if (!Array.prototype.find) {
+  Array.prototype.find = function(fn) {
+    for (var i = 0; i < this.length; i++) { if (fn(this[i])) return this[i]; }
+  };
+}
+</script>
+</body>
+</html>
